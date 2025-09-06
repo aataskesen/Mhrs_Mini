@@ -1,0 +1,57 @@
+### AUTH SERVICE TEST
+GET http://localhost:8080/api/auth/test
+
+### APPOINTMENT SERVICE TEST  
+GET http://localhost:8081/api/appointments/test
+
+### DOCTOR SERVICE TEST
+GET http://localhost:8081/api/doctors/test
+
+### ===============================
+### REGISTER NEW USER
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+    "tcNo": "10000000146",
+    "firstName": "Test",
+    "lastName": "Kullanıcı",
+    "email": "test@test.com",
+    "phoneNumber": "5551234567",
+    "birthDate": "1990-01-01",
+    "password": "123456",
+    "gender": "MALE"
+}
+
+### LOGIN
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+    "tcNo": "10000000146",
+    "password": "123456"
+}
+
+### GET ALL ACTIVE DOCTORS
+GET http://localhost:8081/api/doctors/active
+
+### BOOK APPOINTMENT
+POST http://localhost:8081/api/appointments/book
+Content-Type: application/json
+
+{
+    "patientTc": "10000000146",
+    "patientId": 1,
+    "patientName": "Test Kullanıcı",
+    "doctorId": 1,
+    "hospitalId": 1,
+    "appointmentDate": "2024-09-10",
+    "appointmentTime": "09:30",
+    "notes": "İlk muayene"
+}
+
+### GET MY APPOINTMENTS
+GET http://localhost:8081/api/appointments/my-appointments/1
+
+### SEARCH DOCTOR BY NAME
+GET http://localhost:8081/api/doctors/search?name=Ahmet

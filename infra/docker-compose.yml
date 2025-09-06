@@ -1,0 +1,121 @@
+# infra/docker-compose.yml
+# Altyapı: Postgres x2, Redis, Kafka + Kafka UI, Mailhog
+# Uygulama servisleri (auth/appointment) IDE'den çalışacak.
+
+networks:
+  mhrs-net:
+
+volumes:
+  pgdata_auth:
+  pgdata_appointment:
+
+services:
+  # ---------------- Postgres (Auth) ----------------
+  postgres-auth:
+    image: postgres:16
+    container_name: mhrs_pg_auth
+    environment:
+      POSTGRES_USER: mhrs
+      POSTGRES_PASSWORD: mhrs123
+      POSTGRES_DB: authdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_auth:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U mhrs -d authdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [mhrs-net]
+
+  # --------------- Postgres (Appointment) ----------
+  postgres-appointment:
+    image: postgres:16
+    container_name: mhrs_pg_appointment
+    environment:
+      POSTGRES_USER: mhrs
+      POSTGRES_PASSWORD: mhrs123
+      POSTGRES_DB: appointmentdb
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata_appointment:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U mhrs -d appointmentdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [mhrs-net]
+
+  # --------------------- Redis ---------------------
+  redis:
+    image: redis:7-alpine
+    container_name: mhrs_redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server","--save","","--appendonly","no"] # dev için persistence kapalı
+    healthcheck:
+      test: ["CMD","redis-cli","ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [mhrs-net]
+
+  # --------------------- Kafka ---------------------
+  # Bitnami Kafka (KRaft mod). IDE'den bağlanmak için external listener açtık: localhost:29092
+  kafka:
+    image: bitnami/kafka:3.7
+    container_name: mhrs_kafka
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:29092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=1
+      # Zookeeper yok, KRaft ile tek düğüm
+    ports:
+      - "9092:9092"     # container içi iletişim portu (gerekliyse debug)
+      - "29092:29092"   # IDE ve host uygulamaları için
+    healthcheck:
+      test: ["CMD-SHELL","kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+    restart: unless-stopped
+    networks: [mhrs-net]
+
+  # ------------------- Kafka UI --------------------
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: mhrs_kafka_ui
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=mhrs
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    ports:
+      - "8090:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    networks: [mhrs-net]
+
+  # -------------------- Mailhog --------------------
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mhrs_mailhog
+    ports:
+      - "8025:8025"   # Web UI
+      - "1025:1025"   # SMTP
+    restart: unless-stopped
+    networks: [mhrs-net]

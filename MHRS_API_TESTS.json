@@ -1,0 +1,217 @@
+{
+  "info": {
+    "name": "MHRS Mini API Tests",
+    "description": "MHRS Mini Projesi için API test koleksiyonu",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth Service",
+      "item": [
+        {
+          "name": "Test Auth Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/auth/test",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "auth", "test"]
+            }
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"tcNo\": \"10000000146\",\n    \"firstName\": \"Test\",\n    \"lastName\": \"Kullanıcı\",\n    \"email\": \"test@test.com\",\n    \"phoneNumber\": \"5551234567\",\n    \"birthDate\": \"1990-01-01\",\n    \"password\": \"123456\",\n    \"gender\": \"MALE\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"tcNo\": \"10000000146\",\n    \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Doctor Service",
+      "item": [
+        {
+          "name": "Test Doctor Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/doctors/test",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "doctors", "test"]
+            }
+          }
+        },
+        {
+          "name": "Get All Active Doctors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/doctors/active",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "doctors", "active"]
+            }
+          }
+        },
+        {
+          "name": "Get Doctors by Hospital",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/doctors/by-hospital/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "doctors", "by-hospital", "1"]
+            }
+          }
+        },
+        {
+          "name": "Search Doctor by Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/doctors/search?name=Ahmet",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "doctors", "search"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Ahmet"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appointment Service",
+      "item": [
+        {
+          "name": "Test Appointment Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/appointments/test",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "appointments", "test"]
+            }
+          }
+        },
+        {
+          "name": "Book Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"patientTc\": \"10000000146\",\n    \"patientId\": 1,\n    \"patientName\": \"Test Kullanıcı\",\n    \"doctorId\": 1,\n    \"hospitalId\": 1,\n    \"appointmentDate\": \"2024-09-15\",\n    \"appointmentTime\": \"09:30\",\n    \"notes\": \"İlk muayene\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/appointments/book",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "appointments", "book"]
+            }
+          }
+        },
+        {
+          "name": "Get My Appointments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/appointments/my-appointments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "appointments", "my-appointments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/appointments/RND20240904153045/cancel?reason=İptal",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["api", "appointments", "RND20240904153045", "cancel"],
+              "query": [
+                {
+                  "key": "reason",
+                  "value": "İptal"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+package tr.mhrs.common;
+
+public enum ErrorCode {
+    NOT_FOUND,
+    BUSINESS_CONFLICT,
+    VALIDATION_ERROR,
+    CONSTRAINT_VIOLATION,
+    UNEXPECTED_ERROR,
+    UNAUTHORIZED,
+    FORBIDDEN
+}
